@@ -3,6 +3,15 @@ import { printBanner } from "./ui/banner.js";
 import { requireApiKey } from "./config/env.js";
 import chalk from "chalk";
 import { runQuery } from "./agent/run-query.js";
+import { parseCliMode, type CliMode } from "./agent/modes.js";
+
+function parseMode (value: string): CliMode {
+    const mode = parseCliMode(value);
+    if (!mode){
+        throw new Error(`Invalid Mode "${value}". Use agent, ask or plan.`)
+    }
+    return mode
+}
 
 export function createCli() {
 
@@ -57,6 +66,16 @@ export function createCli() {
         await runQuery(prompt);
     })
 
+    program
+    .command("wakeup")
+    .description("Send a one-shot prompt to the agent")
+    .argument("<prompt>", "What to ask Agent")
+    .option("-m --mode <mode>", "agent | ask | plan" , "agent")
+    .option("-v , --verbose", "Show agent loop message types", false)
+    .action( async (prompt: string, opts: {mode: string; verbose: boolean}) => {
+        requireApiKey()
+        await runQuery(prompt, { mode: parseMode(opts.mode), verbose: opts.verbose})
+    })
 
     program.action(()=>{
         program.help()
