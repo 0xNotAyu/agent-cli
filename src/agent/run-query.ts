@@ -1,9 +1,11 @@
 import "dotenv/config"
 import { query } from "@anthropic-ai/claude-agent-sdk";
 import chalk from "chalk";
+import { handleMessage, type MessageHandlerOptions } from "./message-handler.js";
 
-export async function runQuery(prompt: string){
+export async function runQuery(prompt: string, options : MessageHandlerOptions = {}){
     try {
+        const {verbose = false} = options
         for await (const message of query({
         prompt,
         options:{
@@ -14,9 +16,7 @@ export async function runQuery(prompt: string){
            
         }
     })){
-        if(message.type === "result" && message.subtype === "success"){
-            console.log(message.result)
-        }
+        handleMessage(message, {verbose: true});
     }
     } catch (error) {
         console.log(chalk.red("Error: "), error);
