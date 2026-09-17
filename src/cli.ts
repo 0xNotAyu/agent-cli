@@ -2,6 +2,7 @@ import { Command } from "commander";
 import { printBanner } from "./ui/banner.js";
 import { requireApiKey } from "./config/env.js";
 import chalk from "chalk";
+import { runQuery } from "./agent/run-query.js";
 
 export function createCli() {
 
@@ -45,6 +46,16 @@ export function createCli() {
         console.log(chalk.green("✓ Node.js is >= 18"))
         console.log(chalk.green("✓ AI API key is set"))
     })
+
+    program
+    .command("talk")
+    .description("send one short prompt to the agent")
+    .argument("<prompt>", "The prompt to send to the agent")
+    .action(async (prompt:string) =>{
+        requireApiKey();
+        await runQuery(prompt);
+    })
+
 
     program.action(()=>{
         program.help()
