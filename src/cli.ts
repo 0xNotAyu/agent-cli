@@ -1,4 +1,5 @@
 import { Command } from "commander";
+import { printBanner } from "./ui/banner.js";
 
 export function createCli() {
 
@@ -15,6 +16,13 @@ export function createCli() {
     .action(()=>{
         console.log("hello from Agent cli")
     });
+
+    program
+    .command("banner")
+    .description("show the welcome banner")
+    .action(()=>{
+        printBanner();
+    })
 
     program.action(()=>{
         program.help()
